@@ -4,9 +4,10 @@ class ThreadUseCase {
   constructor({ threadRepository }) {
     this._threadRepository = threadRepository;
   }
+
   async addThread(payload) {
     const thread = new AddThread(payload);
-    return await this._threadRepository.addThread(thread);
+    return this._threadRepository.addThread(thread);
   }
 }
 
