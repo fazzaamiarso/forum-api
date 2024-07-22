@@ -1,4 +1,3 @@
-const InvariantError = require("../../../Commons/exceptions/InvariantError");
 const ThreadRepositoryPostgres = require("../ThreadRepositoryPostgres");
 const pool = require("../../database/postgres/pool");
 const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper");
