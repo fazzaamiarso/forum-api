@@ -4,6 +4,7 @@ const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
 const AddThread = require("../../../Domains/threads/entities/AddThread");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
+const AuthorizationError = require("../../../Commons/exceptions/AuthorizationError");
 
 describe("ThreadRepository postgres", () => {
   afterEach(async () => {
@@ -79,6 +80,56 @@ describe("ThreadRepository postgres", () => {
       await expect(
         threadRepository.getThreadById("thread-not-found")
       ).rejects.toThrow(NotFoundError);
+    });
+  });
+
+  describe("verifyThreadOwner function", () => {
+    it("should not throw Authorization Error with correct payload", async () => {
+      await UsersTableTestHelper.addUser({ id: "owner-123" });
+
+      const generateFakeId = () => "123";
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        generateFakeId
+      );
+
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "owner-123",
+        title: "some title",
+        body: "somebody needs to know",
+      });
+
+      expect(
+        await threadRepository.verifyThreadOwner({
+          threadId: "thread-123",
+          owner: "owner-123",
+        })
+      ).toEqual("thread-123");
+    });
+
+    it("should throw AuthorizationError if not the owner", async () => {
+      await UsersTableTestHelper.addUser({ id: "owner-123" });
+
+      const generateFakeId = () => "123";
+      const threadRepository = new ThreadRepositoryPostgres(
+        pool,
+        generateFakeId
+      );
+
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "owner-123",
+        title: "some title",
+        body: "somebody needs to know",
+      });
+
+      await expect(
+        threadRepository.verifyThreadOwner({
+          owner: "not-owner",
+          threadId: "thread-123",
+        })
+      ).rejects.toThrow(AuthorizationError);
     });
   });
 });

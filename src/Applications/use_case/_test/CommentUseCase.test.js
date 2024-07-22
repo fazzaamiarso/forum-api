@@ -49,4 +49,42 @@ describe("CommentUseCase", () => {
       owner: useCasePayload.owner,
     });
   });
+
+  it("should orchestrate the delete comment action correctly", async () => {
+    const useCasePayload = {
+      commentId: "comment-123",
+      threadId: "thread-435",
+      owner: "user-DWrT3pXe1hccYkV1eIAxS",
+    };
+
+    const mockCommentRepository = new CommentRepository({});
+    const mockThreadRepository = new ThreadRepository({});
+
+    mockCommentRepository.deleteComment = jest
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve({ id: useCasePayload.commentId })
+      );
+
+    mockThreadRepository.verifyThreadOwner = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({}));
+
+    const commentUseCase = new CommentUseCase({
+      commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
+    });
+
+    const deleteComment = await commentUseCase.deleteComment(useCasePayload);
+
+    expect(deleteComment).toStrictEqual({ id: useCasePayload.commentId });
+
+    expect(mockCommentRepository.deleteComment).toBeCalledWith({
+      commentId: useCasePayload.commentId,
+    });
+    expect(mockThreadRepository.verifyThreadOwner).toBeCalledWith({
+      owner: useCasePayload.owner,
+      threadId: useCasePayload.threadId,
+    });
+  });
 });
