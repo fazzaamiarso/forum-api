@@ -7,5 +7,8 @@ describe("Thread interface", () => {
     await expect(threadRepository.addThread({})).rejects.toThrowError(
       "ADD_THREAD.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(threadRepository.getThreadById()).rejects.toThrowError(
+      "GET_THREAD_BY_ID.METHOD_NOT_IMPLEMENTED"
+    );
   });
 });

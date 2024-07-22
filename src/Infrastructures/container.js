@@ -23,9 +23,14 @@ const AuthenticationRepository = require("../Domains/authentications/Authenticat
 const AuthenticationRepositoryPostgres = require("./repository/AuthenticationRepositoryPostgres");
 const LogoutUserUseCase = require("../Applications/use_case/LogoutUserUseCase");
 const RefreshAuthenticationUseCase = require("../Applications/use_case/RefreshAuthenticationUseCase");
+
 const ThreadRepositoryPostgres = require("./repository/ThreadRepositoryPostgres");
 const ThreadUseCase = require("../Applications/use_case/ThreadUseCase");
 const ThreadRepository = require("../Domains/threads/ThreadRepository");
+
+const CommentRepositoryPostgres = require("./repository/CommentRepositoryPostgres");
+const CommentUseCase = require("../Applications/use_case/CommentUseCase");
+const CommentRepository = require("../Domains/comments/CommentRepository");
 
 // creating container
 const container = createContainer();
@@ -72,6 +77,20 @@ container.register([
     },
   },
   {
+    key: CommentRepository.name,
+    Class: CommentRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
     key: PasswordHash.name,
     Class: BcryptPasswordHash,
     parameter: {
@@ -103,6 +122,23 @@ container.register([
     parameter: {
       injectType: "destructuring",
       dependencies: [
+        {
+          name: "threadRepository",
+          internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: CommentUseCase.name,
+    Class: CommentUseCase,
+    parameter: {
+      injectType: "destructuring",
+      dependencies: [
+        {
+          name: "commentRepository",
+          internal: CommentRepository.name,
+        },
         {
           name: "threadRepository",
           internal: ThreadRepository.name,
