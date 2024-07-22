@@ -16,5 +16,8 @@ describe("Comment interface", () => {
     await expect(commentRepository.getCommentById({})).rejects.toThrowError(
       "GET_COMMENT_BY_ID.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(
+      commentRepository.getCommentsFromThread({})
+    ).rejects.toThrowError("GET_COMMENT_FROM_THREAD.METHOD_NOT_IMPLEMENTED");
   });
 });
