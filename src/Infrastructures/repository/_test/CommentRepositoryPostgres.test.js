@@ -73,11 +73,12 @@ describe("CommentRepository postgres", () => {
         generateFakeId
       );
 
-      const { id } = await commentRepository.deleteComment({
+      const { id, isDeleted } = await commentRepository.deleteComment({
         commentId: "comment-123",
       });
 
       expect(id).toBe("comment-123");
+      expect(isDeleted).toBe(true);
     });
 
     it("should throw NotFoundError if there is no comment found with given id", async () => {

@@ -36,7 +36,9 @@ class CommentRepositoryPostgres extends CommentRepository {
     if (!result.rowCount)
       throw new NotFoundError(`No comment with id: ${commentId} found`);
 
-    return { ...result.rows[0] };
+    const row = result.rows[0];
+
+    return { id: row.id, isDeleted: row.is_deleted };
   }
 }
 
