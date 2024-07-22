@@ -63,7 +63,7 @@ describe("CommentUseCase", () => {
     mockCommentRepository.deleteComment = jest
       .fn()
       .mockImplementation(() =>
-        Promise.resolve({ id: useCasePayload.commentId })
+        Promise.resolve({ id: useCasePayload.commentId, is_deleted: true })
       );
 
     mockThreadRepository.verifyThreadOwner = jest
@@ -77,11 +77,15 @@ describe("CommentUseCase", () => {
 
     const deleteComment = await commentUseCase.deleteComment(useCasePayload);
 
-    expect(deleteComment).toStrictEqual({ id: useCasePayload.commentId });
+    expect(deleteComment).toStrictEqual({
+      id: useCasePayload.commentId,
+      is_deleted: true,
+    });
 
     expect(mockCommentRepository.deleteComment).toBeCalledWith({
       commentId: useCasePayload.commentId,
     });
+
     expect(mockThreadRepository.verifyThreadOwner).toBeCalledWith({
       owner: useCasePayload.owner,
       threadId: useCasePayload.threadId,

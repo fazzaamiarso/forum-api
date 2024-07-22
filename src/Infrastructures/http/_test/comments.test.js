@@ -78,4 +78,74 @@ describe("/comments endpoint", () => {
       expect(responseJson.data.addedComment).toBeDefined();
     });
   });
+
+  describe("when DELETE /comments", () => {
+    it("should response 201 and soft delete comment successfully", async () => {
+      const server = await createServer(container);
+
+      await server.inject({
+        method: "POST",
+        url: "/users",
+        payload: {
+          username: "dicoding",
+          password: "secret",
+          fullname: "Dicoding Indonesia",
+        },
+      });
+
+      const authResponse = await server.inject({
+        method: "POST",
+        url: "/authentications",
+        payload: {
+          username: "dicoding",
+          password: "secret",
+        },
+      });
+
+      const { accessToken } = authResponse.result.data;
+
+      const threadRes = await server.inject({
+        method: "POST",
+        url: "/threads",
+        payload: {
+          title: "dicoding",
+          body: "secret",
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const {
+        data: { addedThread },
+      } = JSON.parse(threadRes.payload);
+
+      const commentRes = await server.inject({
+        method: "POST",
+        url: `/threads/${addedThread.id}/comments`,
+        payload: {
+          content: "some random comments",
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const {
+        data: { addedComment },
+      } = JSON.parse(commentRes.payload);
+
+      const response = await server.inject({
+        method: "DELETE",
+        url: `/threads/${addedThread.id}/comments/${addedComment.id}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual("success");
+    });
+  });
 });

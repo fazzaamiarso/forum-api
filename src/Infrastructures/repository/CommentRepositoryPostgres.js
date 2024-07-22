@@ -27,7 +27,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
   async deleteComment({ commentId }) {
     const query = {
-      text: `DELETE FROM comments WHERE id = $1 RETURNING id`,
+      text: `UPDATE comments SET is_deleted = true WHERE id = $1 RETURNING id, is_deleted`,
       values: [commentId],
     };
 
@@ -36,7 +36,7 @@ class CommentRepositoryPostgres extends CommentRepository {
     if (!result.rowCount)
       throw new NotFoundError(`No comment with id: ${commentId} found`);
 
-    return { id: result.rows[0].id };
+    return { ...result.rows[0] };
   }
 }
 
