@@ -15,10 +15,13 @@ class CommentUseCase {
 
   async deleteComment(payload) {
     const comment = new DeleteComment(payload);
-    await this._threadRepository.verifyThreadOwner({
-      threadId: comment.threadId,
+
+    await this._threadRepository.getThreadById(payload.threadId);
+    await this._commentRepository.verifyCommentOwner({
+      commentId: comment.commentId,
       owner: comment.owner,
     });
+
     return this._commentRepository.deleteComment({
       commentId: comment.commentId,
     });

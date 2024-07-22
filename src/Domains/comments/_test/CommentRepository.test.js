@@ -10,5 +10,8 @@ describe("Comment interface", () => {
     await expect(commentRepository.deleteComment({})).rejects.toThrowError(
       "DELETE_COMMENT.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(commentRepository.verifyCommentOwner({})).rejects.toThrowError(
+      "VERIFY_COMMENT_OWNER.METHOD_NOT_IMPLEMENTED"
+    );
   });
 });

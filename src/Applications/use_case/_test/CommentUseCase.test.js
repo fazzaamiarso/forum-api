@@ -66,7 +66,11 @@ describe("CommentUseCase", () => {
         Promise.resolve({ id: useCasePayload.commentId, isDeleted: true })
       );
 
-    mockThreadRepository.verifyThreadOwner = jest
+    mockCommentRepository.verifyCommentOwner = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({}));
+
+    mockThreadRepository.getThreadById = jest
       .fn()
       .mockImplementation(() => Promise.resolve({}));
 
@@ -86,9 +90,13 @@ describe("CommentUseCase", () => {
       commentId: useCasePayload.commentId,
     });
 
-    expect(mockThreadRepository.verifyThreadOwner).toBeCalledWith({
+    expect(mockCommentRepository.verifyCommentOwner).toBeCalledWith({
       owner: useCasePayload.owner,
-      threadId: useCasePayload.threadId,
+      commentId: useCasePayload.commentId,
     });
+
+    expect(mockThreadRepository.getThreadById).toBeCalledWith(
+      useCasePayload.threadId
+    );
   });
 });
