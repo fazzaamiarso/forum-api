@@ -35,8 +35,8 @@ describe("ThreadUseCase", () => {
 
     expect(mockThreadRepository.addThread).toBeCalledWith({
       title: useCasePayload.title,
-      body: "Some body testing for unit test",
-      owner: "user-DWrT3pXe1hccYkV1eIAxS",
+      body: useCasePayload.body,
+      owner: useCasePayload.owner,
     });
   });
 });

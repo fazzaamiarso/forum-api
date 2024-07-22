@@ -1,5 +1,5 @@
 class CommentRepository {
-  async addComment() {
+  async addComment(payload) {
     throw new Error("ADD_COMMENT.METHOD_NOT_IMPLEMENTED");
   }
 }
