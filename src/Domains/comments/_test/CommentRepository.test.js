@@ -7,5 +7,8 @@ describe("Comment interface", () => {
     await expect(commentRepository.addComment({})).rejects.toThrowError(
       "ADD_COMMENT.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(commentRepository.deleteComment({})).rejects.toThrowError(
+      "DELETE_COMMENT.METHOD_NOT_IMPLEMENTED"
+    );
   });
 });
