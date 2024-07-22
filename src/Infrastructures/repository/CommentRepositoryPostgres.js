@@ -1,4 +1,5 @@
 const NotFoundError = require("../../Commons/exceptions/NotFoundError");
+const AuthorizationError = require("../../Commons/exceptions/AuthorizationError");
 const CommentRepository = require("../../Domains/comments/CommentRepository");
 
 class CommentRepositoryPostgres extends CommentRepository {
@@ -39,6 +40,40 @@ class CommentRepositoryPostgres extends CommentRepository {
     const row = result.rows[0];
 
     return { id: row.id, isDeleted: row.is_deleted };
+  }
+
+  async getCommentById({ commentId, threadId }) {
+    const query = {
+      text: `SELECT * FROM comments WHERE id = $1 AND thread_id = $2 AND is_deleted = false`,
+      values: [commentId, threadId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount)
+      throw new NotFoundError(
+        `No comment with id: ${commentId} in thread: ${threadId} found`
+      );
+
+    const row = result.rows[0];
+
+    return { ...row };
+  }
+
+  async verifyCommentOwner({ owner, commentId }) {
+    const query = {
+      text: `SELECT id FROM comments WHERE id = $1 AND user_id = $2`,
+      values: [commentId, owner],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount)
+      throw new AuthorizationError(
+        `Can't delete comment! Only comment owner can delete a comment!`
+      );
+
+    return result.rows[0].id;
   }
 }
 

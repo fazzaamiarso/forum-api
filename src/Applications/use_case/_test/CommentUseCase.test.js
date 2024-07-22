@@ -70,6 +70,10 @@ describe("CommentUseCase", () => {
       .fn()
       .mockImplementation(() => Promise.resolve({}));
 
+    mockCommentRepository.getCommentById = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve({}));
+
     mockThreadRepository.getThreadById = jest
       .fn()
       .mockImplementation(() => Promise.resolve({}));
@@ -88,6 +92,11 @@ describe("CommentUseCase", () => {
 
     expect(mockCommentRepository.deleteComment).toBeCalledWith({
       commentId: useCasePayload.commentId,
+    });
+
+    expect(mockCommentRepository.getCommentById).toBeCalledWith({
+      commentId: useCasePayload.commentId,
+      threadId: useCasePayload.threadId,
     });
 
     expect(mockCommentRepository.verifyCommentOwner).toBeCalledWith({

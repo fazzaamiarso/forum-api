@@ -1,4 +1,3 @@
-const AuthorizationError = require("../../Commons/exceptions/AuthorizationError");
 const NotFoundError = require("../../Commons/exceptions/NotFoundError");
 const ThreadRepository = require("../../Domains/threads/ThreadRepository");
 
@@ -38,22 +37,6 @@ class ThreadRepositoryPostgres extends ThreadRepository {
       throw new NotFoundError(`Thread with Id: ${id} not found!`);
 
     return result.rows[0];
-  }
-
-  async verifyThreadOwner({ owner, threadId }) {
-    const query = {
-      text: `SELECT id FROM threads WHERE id = $1 AND user_id = $2`,
-      values: [threadId, owner],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount)
-      throw new AuthorizationError(
-        `Can't delete comment! Only thread owner can delete a comment!`
-      );
-
-    return result.rows[0].id;
   }
 }
 

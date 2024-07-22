@@ -13,5 +13,8 @@ describe("Comment interface", () => {
     await expect(commentRepository.verifyCommentOwner({})).rejects.toThrowError(
       "VERIFY_COMMENT_OWNER.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(commentRepository.getCommentById({})).rejects.toThrowError(
+      "GET_COMMENT_BY_ID.METHOD_NOT_IMPLEMENTED"
+    );
   });
 });
