@@ -7,5 +7,8 @@ describe("Reply interface", () => {
     await expect(replyRepository.insertReply({})).rejects.toThrowError(
       "INSERT_REPLY.METHOD_NOT_IMPLEMENTED"
     );
+    await expect(
+      replyRepository.getRepliesFromComment({})
+    ).rejects.toThrowError("GET_REPLIES_FROM_COMMENT.METHOD_NOT_IMPLEMENTED");
   });
 });
