@@ -16,7 +16,6 @@ const createServer = async (container) => {
         origin: ["*"],
       },
     },
-    debug: { request: ["error"] },
   });
 
   await server.register([
