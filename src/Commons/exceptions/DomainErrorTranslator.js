@@ -57,6 +57,12 @@ DomainErrorTranslator._directories = {
   "THREAD_DETAIL.NOT_MEET_DATA_TYPE_SPECIFICATION": new InvariantError(
     "can't create thread detail! wrong data types!"
   ),
+  "THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY": new InvariantError(
+    "can't create thread comment! missing properties!"
+  ),
+  "THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION": new InvariantError(
+    "can't create thread comment! wrong data types!"
+  ),
 };
 
 module.exports = DomainErrorTranslator;

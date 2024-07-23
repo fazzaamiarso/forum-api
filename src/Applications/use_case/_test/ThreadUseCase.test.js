@@ -60,12 +60,14 @@ describe("ThreadUseCase", () => {
         username: "johndoe",
         date: "2021-08-08T07:22:33.555Z",
         content: "sebuah comment",
+        is_deleted: false,
       },
       {
         id: "comment-yksuCoxM2s4MMrZJO-qVD",
         username: "dicoding",
         date: "2021-08-08T07:26:21.338Z",
-        content: "**komentar telah dihapus**",
+        content: "some random thing",
+        is_deleted: true,
       },
     ];
 
@@ -85,12 +87,9 @@ describe("ThreadUseCase", () => {
       commentRepository: mockCommentRepository,
     });
 
-    const finalData = {
-      ...mockThreadDetail,
-      comments: mockThreadComments,
-    };
-
-    const threadDetail = await threadUseCase.getThreadDetail(useCasePayload);
+    const threadDetail = await threadUseCase.getThreadDetail(
+      useCasePayload.threadId
+    );
 
     expect(mockThreadRepository.getThreadById).toBeCalledWith(
       useCasePayload.threadId
@@ -99,6 +98,19 @@ describe("ThreadUseCase", () => {
       useCasePayload
     );
 
-    expect(threadDetail).toStrictEqual(finalData);
+    expect(threadDetail.comments).toStrictEqual([
+      {
+        id: "comment-_pby2_tmXV6bcvcdev8xk",
+        username: "johndoe",
+        date: "2021-08-08T07:22:33.555Z",
+        content: "sebuah comment",
+      },
+      {
+        id: "comment-yksuCoxM2s4MMrZJO-qVD",
+        username: "dicoding",
+        date: "2021-08-08T07:26:21.338Z",
+        content: "**komentar telah dihapus**",
+      },
+    ]);
   });
 });

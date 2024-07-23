@@ -1,4 +1,5 @@
 const AddThread = require("../../Domains/threads/entities/AddThread");
+const ThreadComment = require("../../Domains/comments/entities/ThreadComment");
 
 class ThreadUseCase {
   constructor({ threadRepository, commentRepository }) {
@@ -12,17 +13,25 @@ class ThreadUseCase {
   }
 
   async getThreadDetail(payload) {
-    const threadData = await this._threadRepository.getThreadById(
-      payload.threadId
-    );
+    const threadData = await this._threadRepository.getThreadById(payload);
 
     const threadComments = await this._commentRepository.getCommentsFromThread({
-      threadId: payload.threadId,
+      threadId: payload,
     });
+
+    const finalComments = threadComments.map((comment) => ({
+      ...new ThreadComment({
+        id: comment.id,
+        date: comment.date.toString(),
+        content: comment.content,
+        username: comment.username,
+        isDeleted: comment.is_deleted,
+      }),
+    }));
 
     return {
       ...threadData,
-      comments: threadComments,
+      comments: finalComments,
     };
   }
 }
