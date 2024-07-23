@@ -47,7 +47,10 @@ describe("ThreadRepository postgres", () => {
 
   describe("getThreadById function", () => {
     it("should return thread correctly with correct id", async () => {
-      await UsersTableTestHelper.addUser({ id: "owner-123" });
+      await UsersTableTestHelper.addUser({
+        id: "user-123",
+        username: "rimuru",
+      });
 
       const generateFakeId = () => "123";
       const threadRepository = new ThreadRepositoryPostgres(
@@ -57,15 +60,17 @@ describe("ThreadRepository postgres", () => {
 
       await ThreadsTableTestHelper.addThread({
         id: "thread-123",
-        owner: "owner-123",
+        owner: "user-123",
         title: "some title",
         body: "somebody needs to know",
       });
 
       const thread = await threadRepository.getThreadById("thread-123");
 
-      expect(thread.id).toStrictEqual("thread-123");
-      expect(thread.title).toStrictEqual("some title");
+      expect(thread.id).toEqual("thread-123");
+      expect(thread.title).toEqual("some title");
+      expect(thread.username).toEqual("rimuru");
+      expect(thread.date).toBeDefined();
     });
 
     it("should throw NotFoundError if there is no thread found with given id", async () => {

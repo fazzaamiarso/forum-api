@@ -139,6 +139,52 @@ describe("CommentRepository postgres", () => {
     });
   });
 
+  describe("getCommentsFromThread function", () => {
+    it("should return comments correctly with correct thread id", async () => {
+      await UsersTableTestHelper.addUser({
+        id: "user-123",
+        username: "rimuru",
+      });
+      await UsersTableTestHelper.addUser({
+        id: "user-234",
+        username: "benimaru",
+      });
+
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-123",
+        owner: "user-123",
+        title: "some title",
+        body: "somebody needs to know",
+      });
+
+      const generateFakeId = () => "123";
+      const commentRepository = new CommentRepositoryPostgres(
+        pool,
+        generateFakeId
+      );
+
+      await CommentsTableTestHelper.insertComment({
+        id: "comment-123",
+        owner: "user-123",
+        threadId: "thread-123",
+      });
+
+      await CommentsTableTestHelper.insertComment({
+        id: "comment-234",
+        owner: "user-234",
+        threadId: "thread-123",
+      });
+
+      const comments = await commentRepository.getCommentsFromThread({
+        threadId: "thread-123",
+      });
+
+      expect(comments.length).toBe(2);
+      expect(comments[0]).toHaveProperty("username", "rimuru");
+      expect(comments[1]).toHaveProperty("username", "benimaru");
+    });
+  });
+
   describe("verifyCommentOwner function", () => {
     it("should not throw Authorization Error with correct payload", async () => {
       await UsersTableTestHelper.addUser({ id: "user-123" });

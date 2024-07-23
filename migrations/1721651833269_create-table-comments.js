@@ -17,6 +17,11 @@ exports.up = (pgm) => {
       references: "threads",
       onDelete: "CASCADE",
     },
+    date: {
+      type: "timestamp",
+      notNull: true,
+      default: pgm.func("current_timestamp"),
+    },
     content: {
       type: "TEXT",
       notNull: true,

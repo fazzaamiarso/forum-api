@@ -28,7 +28,11 @@ class ThreadRepositoryPostgres extends ThreadRepository {
 
   async getThreadById(id) {
     const query = {
-      text: `SELECT * FROM threads WHERE id = $1`,
+      text: `SELECT t.id, t.title, t.body, t.date, u.username
+      FROM threads t 
+      INNER JOIN users u 
+      ON u.id = t.user_id
+      WHERE t.id = $1`,
       values: [id],
     };
 
@@ -37,7 +41,10 @@ class ThreadRepositoryPostgres extends ThreadRepository {
     if (!result.rowCount)
       throw new NotFoundError(`Thread with Id: ${id} not found!`);
 
-    return new ThreadDetail({ ...result.rows[0] });
+    return new ThreadDetail({
+      ...result.rows[0],
+      date: result.rows[0].date.toISOString(),
+    });
   }
 }
 
