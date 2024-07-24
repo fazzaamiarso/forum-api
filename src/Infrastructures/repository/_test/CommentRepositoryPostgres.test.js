@@ -18,7 +18,7 @@ describe("CommentRepository postgres", () => {
     await pool.end();
   });
 
-  describe("addComment function", () => {
+  describe("insertComment function", () => {
     it("should return added comment correctly", async () => {
       await UsersTableTestHelper.addUser({ id: "user-123" });
       await ThreadsTableTestHelper.addThread({
@@ -52,6 +52,43 @@ describe("CommentRepository postgres", () => {
       expect(
         await CommentsTableTestHelper.findCommentById("comment-123")
       ).toHaveProperty("thread_id", "thread-456");
+    });
+  });
+
+  describe("insertCommentAsReply function", () => {
+    it("should return added comment as reply correctly", async () => {
+      await UsersTableTestHelper.addUser({ id: "user-123" });
+      await ThreadsTableTestHelper.addThread({
+        id: "thread-456",
+        owner: "user-123",
+      });
+
+      await CommentsTableTestHelper.insertComment({
+        id: "comment-123",
+        threadId: "thread-456",
+        owner: "user-123",
+      });
+
+      const generateFakeId = () => "555";
+      const commentRepository = new CommentRepositoryPostgres(
+        pool,
+        generateFakeId
+      );
+
+      const addedReply = await commentRepository.insertCommentAsReply(
+        new AddComment({
+          owner: "user-123",
+          threadId: "thread-456",
+          content: "some random content for testing",
+          parentCommentId: "comment-123",
+        })
+      );
+
+      expect(addedReply).toStrictEqual({
+        id: "reply-555",
+        owner: "user-123",
+        content: "some random content for testing",
+      });
     });
   });
 

@@ -26,6 +26,23 @@ class CommentRepositoryPostgres extends CommentRepository {
     return { ...result.rows[0] };
   }
 
+  async insertCommentAsReply(commentData) {
+    const { owner, content, threadId, parentCommentId } = commentData;
+    const id = `reply-${this._generateId()}`;
+
+    const query = {
+      text: `INSERT 
+      INTO comments(id, user_id, thread_id, content, parent_comment_id) 
+      VALUES($1, $2, $3, $4, $5) 
+      RETURNING id, user_id AS owner, content`,
+      values: [id, owner, threadId, content, parentCommentId],
+    };
+
+    const result = await this._pool.query(query);
+
+    return { ...result.rows[0] };
+  }
+
   async deleteComment({ commentId }) {
     const query = {
       text: `UPDATE comments SET is_deleted = true WHERE id = $1 RETURNING id, is_deleted`,

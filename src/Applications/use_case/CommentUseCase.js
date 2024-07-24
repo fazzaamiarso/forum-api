@@ -16,7 +16,10 @@ class CommentUseCase {
   async addCommentAsReply(payload) {
     const comment = new AddComment(payload);
 
-    await this._commentRepository.getCommentById(comment.parentCommentId);
+    await this._commentRepository.getCommentById({
+      commentId: comment.parentCommentId,
+      threadId: comment.threadId,
+    });
 
     return this._commentRepository.insertCommentAsReply(comment);
   }

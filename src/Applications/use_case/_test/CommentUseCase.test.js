@@ -154,9 +154,10 @@ describe("CommentUseCase", () => {
         date: "2021-08-08T07:59:48.766Z",
       });
 
-      expect(mockCommentRepository.getCommentById).toBeCalledWith(
-        useCasePayload.parentCommentId
-      );
+      expect(mockCommentRepository.getCommentById).toBeCalledWith({
+        threadId: useCasePayload.threadId,
+        commentId: useCasePayload.parentCommentId,
+      });
 
       expect(mockCommentRepository.insertCommentAsReply).toBeCalledWith({
         content: useCasePayload.content,

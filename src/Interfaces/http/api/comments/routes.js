@@ -15,6 +15,14 @@ const routes = (handler) => [
       auth: "forumapi_dicoding_jwt",
     },
   },
+  {
+    method: "POST",
+    path: "/threads/{threadId}/comments/{commentId}/replies",
+    handler: handler.postCommentAsReplyHandler,
+    options: {
+      auth: "forumapi_dicoding_jwt",
+    },
+  },
 ];
 
 module.exports = routes;
