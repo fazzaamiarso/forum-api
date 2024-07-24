@@ -225,4 +225,91 @@ describe("/threads/{threadId}/comments endpoint", () => {
       expect(responseJson.data.addedReply).toBeDefined();
     });
   });
+
+  describe("when DELETE /threads/{threadId}/comments/{commentId}/replies", () => {
+    it("should response 200 and soft delete comment reply successfully", async () => {
+      const requestPayload = {
+        content: "some random content",
+      };
+
+      const server = await createServer(container);
+
+      await server.inject({
+        method: "POST",
+        url: "/users",
+        payload: {
+          username: "dicoding",
+          password: "secret",
+          fullname: "Dicoding Indonesia",
+        },
+      });
+
+      const authResponse = await server.inject({
+        method: "POST",
+        url: "/authentications",
+        payload: {
+          username: "dicoding",
+          password: "secret",
+        },
+      });
+
+      const { accessToken } = authResponse.result.data;
+
+      const threadRes = await server.inject({
+        method: "POST",
+        url: "/threads",
+        payload: {
+          title: "dicoding",
+          body: "secret",
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const {
+        data: { addedThread },
+      } = JSON.parse(threadRes.payload);
+
+      const commentRes = await server.inject({
+        method: "POST",
+        url: `/threads/${addedThread.id}/comments`,
+        payload: {
+          content: "some random comments",
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const {
+        data: { addedComment },
+      } = JSON.parse(commentRes.payload);
+
+      const replyResponse = await server.inject({
+        method: "POST",
+        url: `/threads/${addedThread.id}/comments/${addedComment.id}/replies`,
+        payload: requestPayload,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const {
+        data: { addedReply },
+      } = JSON.parse(replyResponse.payload);
+
+      const response = await server.inject({
+        method: "DELETE",
+        url: `/threads/${addedThread.id}/comments/${addedComment.id}/replies/${addedReply.id}`,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual("success");
+    });
+  });
 });

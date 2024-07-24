@@ -23,6 +23,14 @@ const routes = (handler) => [
       auth: "forumapi_dicoding_jwt",
     },
   },
+  {
+    method: "DELETE",
+    path: "/threads/{threadId}/comments/{commentId}/replies/{replyId}",
+    handler: handler.deleteCommentReplyHandler,
+    options: {
+      auth: "forumapi_dicoding_jwt",
+    },
+  },
 ];
 
 module.exports = routes;

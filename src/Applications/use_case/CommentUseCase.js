@@ -39,6 +39,7 @@ class CommentUseCase {
 
     return this._commentRepository.deleteComment({
       commentId: comment.commentId,
+      parentCommentId: comment.parentCommentId,
     });
   }
 }

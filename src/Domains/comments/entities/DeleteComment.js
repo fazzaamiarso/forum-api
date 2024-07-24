@@ -1,9 +1,10 @@
 class DeleteComment {
   constructor(payload) {
     this._validatePayload(payload);
-    const { commentId, threadId, owner } = payload;
+    const { commentId, threadId, owner, parentCommentId = null } = payload;
 
     this.commentId = commentId;
+    this.parentCommentId = parentCommentId;
     this.threadId = threadId;
     this.owner = owner;
   }

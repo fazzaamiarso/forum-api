@@ -95,6 +95,7 @@ describe("CommentUseCase", () => {
 
       expect(mockCommentRepository.deleteComment).toBeCalledWith({
         commentId: useCasePayload.commentId,
+        parentCommentId: null,
       });
 
       expect(mockCommentRepository.getCommentById).toBeCalledWith({

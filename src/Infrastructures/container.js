@@ -32,10 +32,6 @@ const CommentRepositoryPostgres = require("./repository/CommentRepositoryPostgre
 const CommentUseCase = require("../Applications/use_case/CommentUseCase");
 const CommentRepository = require("../Domains/comments/CommentRepository");
 
-const ReplyRepository = require("../Domains/replies/ReplyRepository");
-const ReplyRepositoryPostgres = require("./repository/ReplyRepositoryPostgres");
-const ReplyUseCase = require("../Applications/use_case/ReplyUseCase");
-
 // creating container
 const container = createContainer();
 
@@ -95,20 +91,6 @@ container.register([
     },
   },
   {
-    key: ReplyRepository.name,
-    Class: ReplyRepositoryPostgres,
-    parameter: {
-      dependencies: [
-        {
-          concrete: pool,
-        },
-        {
-          concrete: nanoid,
-        },
-      ],
-    },
-  },
-  {
     key: PasswordHash.name,
     Class: BcryptPasswordHash,
     parameter: {
@@ -143,23 +125,6 @@ container.register([
         {
           name: "threadRepository",
           internal: ThreadRepository.name,
-        },
-        {
-          name: "commentRepository",
-          internal: CommentRepository.name,
-        },
-      ],
-    },
-  },
-  {
-    key: ReplyUseCase.name,
-    Class: ReplyUseCase,
-    parameter: {
-      injectType: "destructuring",
-      dependencies: [
-        {
-          name: "replyRepository",
-          internal: ReplyRepository.name,
         },
         {
           name: "commentRepository",
