@@ -7,6 +7,7 @@ class ThreadComment {
     this.content = isDeleted ? "**komentar telah dihapus**" : content;
     this.username = username;
     this.date = date;
+    this.replies = [];
   }
 
   _validatePayload({ id, content, username, date, isDeleted }) {

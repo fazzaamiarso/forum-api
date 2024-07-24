@@ -61,6 +61,7 @@ describe("ThreadUseCase", () => {
         date: "2021-08-08T07:22:33.555Z",
         content: "sebuah comment",
         is_deleted: false,
+        parent_comment_id: null,
       },
       {
         id: "comment-yksuCoxM2s4MMrZJO-qVD",
@@ -68,6 +69,15 @@ describe("ThreadUseCase", () => {
         date: "2021-08-08T07:26:21.338Z",
         content: "some random thing",
         is_deleted: true,
+        parent_comment_id: null,
+      },
+      {
+        id: "reply-777",
+        username: "dicoding",
+        date: "2022-08-08T0:26:21.338Z",
+        content: "some random thing",
+        is_deleted: false,
+        parent_comment_id: "comment-_pby2_tmXV6bcvcdev8xk",
       },
     ];
 
@@ -104,12 +114,22 @@ describe("ThreadUseCase", () => {
         username: "johndoe",
         date: "2021-08-08T07:22:33.555Z",
         content: "sebuah comment",
+        replies: [
+          {
+            id: "reply-777",
+            username: "dicoding",
+            date: "2022-08-08T0:26:21.338Z",
+            content: "some random thing",
+            parentCommentId: "comment-_pby2_tmXV6bcvcdev8xk",
+          },
+        ],
       },
       {
         id: "comment-yksuCoxM2s4MMrZJO-qVD",
         username: "dicoding",
         date: "2021-08-08T07:26:21.338Z",
         content: "**komentar telah dihapus**",
+        replies: [],
       },
     ]);
   });

@@ -1,6 +1,6 @@
-const ThreadComment = require("../ThreadComment");
+const CommentReply = require("../CommentReply");
 
-describe("a ThreadComment entities", () => {
+describe("a CommentReply entities", () => {
   it("should throw error when payload did not contain needed property", () => {
     const payload = {
       id: "comment-123",
@@ -8,8 +8,8 @@ describe("a ThreadComment entities", () => {
       date: "2024-07-23T14:22:00.529Z",
     };
 
-    expect(() => new ThreadComment(payload)).toThrowError(
-      "THREAD_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY"
+    expect(() => new CommentReply(payload)).toThrowError(
+      "COMMENT_REPLY.NOT_CONTAIN_NEEDED_PROPERTY"
     );
   });
 
@@ -20,30 +20,32 @@ describe("a ThreadComment entities", () => {
       date: "2024-07-23T14:22:00.529Z",
       isDeleted: "false",
       username: "wahyu",
+      parentCommentId: "comment-234",
     };
 
-    expect(() => new ThreadComment(payload)).toThrowError(
-      "THREAD_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION"
+    expect(() => new CommentReply(payload)).toThrowError(
+      "COMMENT_REPLY.NOT_MEET_DATA_TYPE_SPECIFICATION"
     );
   });
 
-  it("should create ThreadComment object correctly", () => {
+  it("should create CommentReply object correctly", () => {
     const payload = {
       id: "comment-123",
       content: "some content",
       date: "2024-07-23T14:22:00.529Z",
       isDeleted: true,
       username: "wahyu",
+      parentCommentId: "comment-234",
     };
 
-    const threadComment = new ThreadComment(payload);
+    const commentReply = new CommentReply(payload);
 
-    expect({ ...threadComment }).toStrictEqual({
+    expect({ ...commentReply }).toStrictEqual({
       id: payload.id,
-      content: "**komentar telah dihapus**",
+      content: "**balasan telah dihapus**",
       date: payload.date,
       username: payload.username,
-      replies: [],
+      parentCommentId: "comment-234",
     });
   });
 });

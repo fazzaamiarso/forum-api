@@ -71,6 +71,11 @@ describe("/threads endpoint", () => {
         username: "rimuru",
       });
 
+      await UsersTableTestHelper.addUser({
+        id: "user-234",
+        username: "shouei",
+      });
+
       await ThreadsTableTestHelper.addThread({
         id: "thread-123",
         owner: "user-123",
@@ -90,6 +95,13 @@ describe("/threads endpoint", () => {
         threadId: "thread-123",
       });
 
+      await CommentsTableTestHelper.insertComment({
+        id: "reply-123",
+        owner: "user-234",
+        threadId: "thread-123",
+        parentCommentId: "comment-123",
+      });
+
       const server = await createServer(container);
 
       const response = await server.inject({
@@ -104,6 +116,7 @@ describe("/threads endpoint", () => {
 
       expect(responseJson.data.thread).toHaveProperty("username", "rimuru");
       expect(responseJson.data.thread.comments).toHaveLength(2);
+      expect(responseJson.data.thread.comments[0].replies).toHaveLength(1);
     });
   });
 });
