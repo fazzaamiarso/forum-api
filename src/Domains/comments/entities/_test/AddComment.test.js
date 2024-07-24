@@ -31,10 +31,13 @@ describe("a AddComment entities", () => {
       threadId: "thread-567",
     };
 
-    const { content, threadId, owner } = new AddComment(payload);
+    const { content, threadId, owner, parentCommentId } = new AddComment(
+      payload
+    );
 
     expect(content).toEqual(payload.content);
     expect(threadId).toEqual(payload.threadId);
     expect(owner).toEqual(payload.owner);
+    expect(parentCommentId).toEqual(null);
   });
 });

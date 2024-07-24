@@ -13,6 +13,14 @@ class CommentUseCase {
     return this._commentRepository.insertComment(comment);
   }
 
+  async addCommentAsReply(payload) {
+    const comment = new AddComment(payload);
+
+    await this._commentRepository.getCommentById(comment.parentCommentId);
+
+    return this._commentRepository.insertCommentAsReply(comment);
+  }
+
   async deleteComment(payload) {
     const comment = new DeleteComment(payload);
 

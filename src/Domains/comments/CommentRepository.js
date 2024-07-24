@@ -1,6 +1,10 @@
 class CommentRepository {
-  async addComment(payload) {
-    throw new Error("ADD_COMMENT.METHOD_NOT_IMPLEMENTED");
+  async insertComment(payload) {
+    throw new Error("INSERT_COMMENT.METHOD_NOT_IMPLEMENTED");
+  }
+
+  async insertCommentAsReply(payload) {
+    throw new Error("INSERT_COMMENT_AS_REPLY.METHOD_NOT_IMPLEMENTED");
   }
 
   async deleteComment(payload) {
