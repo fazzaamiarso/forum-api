@@ -27,7 +27,7 @@ describe("a ThreadComment entities", () => {
     );
   });
 
-  it("should create ThreadComment object correctly", () => {
+  it("should create ThreadComment object correctly when isDeleted true", () => {
     const payload = {
       id: "comment-123",
       content: "some content",
@@ -41,6 +41,26 @@ describe("a ThreadComment entities", () => {
     expect({ ...threadComment }).toStrictEqual({
       id: payload.id,
       content: "**komentar telah dihapus**",
+      date: payload.date,
+      username: payload.username,
+      replies: [],
+    });
+  });
+
+  it("should create ThreadComment object correctly when isDeleted false", () => {
+    const payload = {
+      id: "comment-123",
+      content: "some content",
+      date: "2024-07-23T14:22:00.529Z",
+      isDeleted: false,
+      username: "wahyu",
+    };
+
+    const threadComment = new ThreadComment(payload);
+
+    expect({ ...threadComment }).toStrictEqual({
+      id: payload.id,
+      content: "some content",
       date: payload.date,
       username: payload.username,
       replies: [],

@@ -28,7 +28,7 @@ describe("a CommentReply entities", () => {
     );
   });
 
-  it("should create CommentReply object correctly", () => {
+  it("should create CommentReply object correctly when isDelete true", () => {
     const payload = {
       id: "comment-123",
       content: "some content",
@@ -43,6 +43,27 @@ describe("a CommentReply entities", () => {
     expect({ ...commentReply }).toStrictEqual({
       id: payload.id,
       content: "**balasan telah dihapus**",
+      date: payload.date,
+      username: payload.username,
+      parentCommentId: "comment-234",
+    });
+  });
+
+  it("should create CommentReply object correctly when isDelete false", () => {
+    const payload = {
+      id: "comment-123",
+      content: "some content",
+      date: "2024-07-23T14:22:00.529Z",
+      isDeleted: false,
+      username: "wahyu",
+      parentCommentId: "comment-234",
+    };
+
+    const commentReply = new CommentReply(payload);
+
+    expect({ ...commentReply }).toStrictEqual({
+      id: payload.id,
+      content: "some content",
       date: payload.date,
       username: payload.username,
       parentCommentId: "comment-234",

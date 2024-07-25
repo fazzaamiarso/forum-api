@@ -1,10 +1,24 @@
 const CommentRepository = require("../../../Domains/comments/CommentRepository");
+const AddComment = require("../../../Domains/comments/entities/AddComment");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
 const CommentUseCase = require("../CommentUseCase");
 
 describe("CommentUseCase", () => {
+  let mockCommentRepository;
+  let mockThreadRepository;
+  let commentUseCase;
+
+  beforeEach(() => {
+    mockCommentRepository = new CommentRepository({});
+    mockThreadRepository = new ThreadRepository({});
+
+    commentUseCase = new CommentUseCase({
+      commentRepository: mockCommentRepository,
+      threadRepository: mockThreadRepository,
+    });
+  });
   describe("comment", () => {
-    it("should orchestrate the add comment action correctly", async () => {
+    it("should orchestrate the addComment action correctly", async () => {
       const useCasePayload = {
         content: "Some testing content",
         threadId: "thread-435",
@@ -17,21 +31,11 @@ describe("CommentUseCase", () => {
         owner: "user-DWrT3pXe1hccYkV1eIAxS",
       };
 
-      const mockCommentRepository = new CommentRepository({});
-      const mockThreadRepository = new ThreadRepository({});
-
       mockCommentRepository.insertComment = jest
         .fn()
-        .mockImplementation(() => Promise.resolve(mockComment));
+        .mockResolvedValue(mockComment);
 
-      mockThreadRepository.getThreadById = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve({}));
-
-      const commentUseCase = new CommentUseCase({
-        commentRepository: mockCommentRepository,
-        threadRepository: mockThreadRepository,
-      });
+      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue({});
 
       const addedComment = await commentUseCase.addComment(useCasePayload);
 
@@ -44,15 +48,12 @@ describe("CommentUseCase", () => {
       expect(mockThreadRepository.getThreadById).toBeCalledWith(
         useCasePayload.threadId
       );
-      expect(mockCommentRepository.insertComment).toBeCalledWith({
-        content: useCasePayload.content,
-        threadId: useCasePayload.threadId,
-        owner: useCasePayload.owner,
-        parentCommentId: null,
-      });
+      expect(mockCommentRepository.insertComment).toBeCalledWith(
+        new AddComment(useCasePayload)
+      );
     });
 
-    it("should orchestrate the delete comment action correctly", async () => {
+    it("should orchestrate the deleteComment action correctly", async () => {
       const useCasePayload = {
         commentId: "comment-123",
         threadId: "thread-435",
@@ -60,31 +61,16 @@ describe("CommentUseCase", () => {
         date: "2021-08-08T07:59:48.766Z",
       };
 
-      const mockCommentRepository = new CommentRepository({});
-      const mockThreadRepository = new ThreadRepository({});
-
       mockCommentRepository.deleteComment = jest
         .fn()
-        .mockImplementation(() =>
-          Promise.resolve({ id: useCasePayload.commentId, isDeleted: true })
-        );
+        .mockResolvedValue({ id: useCasePayload.commentId, isDeleted: true });
 
       mockCommentRepository.verifyCommentOwner = jest
         .fn()
-        .mockImplementation(() => Promise.resolve({}));
+        .mockResolvedValue({});
 
-      mockCommentRepository.getCommentById = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve({}));
-
-      mockThreadRepository.getThreadById = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve({}));
-
-      const commentUseCase = new CommentUseCase({
-        commentRepository: mockCommentRepository,
-        threadRepository: mockThreadRepository,
-      });
+      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({});
+      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue({});
 
       const deleteComment = await commentUseCase.deleteComment(useCasePayload);
 
@@ -115,7 +101,7 @@ describe("CommentUseCase", () => {
   });
 
   describe("reply", () => {
-    it("should orchestrate the add comment as reply action correctly", async () => {
+    it("should orchestrate the addCommentAsReply action correctly", async () => {
       const useCasePayload = {
         content: "Some testing content",
         threadId: "thread-435",
@@ -130,21 +116,11 @@ describe("CommentUseCase", () => {
         date: "2021-08-08T07:59:48.766Z",
       };
 
-      const mockCommentRepository = new CommentRepository({});
-      const mockThreadRepository = new ThreadRepository({});
-
       mockCommentRepository.insertCommentAsReply = jest
         .fn()
-        .mockImplementation(() => Promise.resolve(mockReply));
+        .mockResolvedValue(mockReply);
 
-      mockCommentRepository.getCommentById = jest
-        .fn()
-        .mockImplementation(() => Promise.resolve({}));
-
-      const commentUseCase = new CommentUseCase({
-        commentRepository: mockCommentRepository,
-        threadRepository: mockThreadRepository,
-      });
+      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({});
 
       const addedReply = await commentUseCase.addCommentAsReply(useCasePayload);
 
@@ -160,12 +136,56 @@ describe("CommentUseCase", () => {
         commentId: useCasePayload.parentCommentId,
       });
 
-      expect(mockCommentRepository.insertCommentAsReply).toBeCalledWith({
-        content: useCasePayload.content,
-        threadId: useCasePayload.threadId,
-        parentCommentId: useCasePayload.parentCommentId,
-        owner: useCasePayload.owner,
+      expect(mockCommentRepository.insertCommentAsReply).toBeCalledWith(
+        new AddComment(useCasePayload)
+      );
+    });
+
+    it("should orchestrate the deleteComment as reply action correctly", async () => {
+      const useCasePayload = {
+        commentId: "comment-123",
+        threadId: "thread-435",
+        owner: "user-DWrT3pXe1hccYkV1eIAxS",
+        date: "2021-08-08T07:59:48.766Z",
+        parentCommentId: "comment-parent123",
+      };
+
+      mockCommentRepository.deleteComment = jest
+        .fn()
+        .mockResolvedValue({ id: useCasePayload.commentId, isDeleted: true });
+
+      mockCommentRepository.verifyCommentOwner = jest
+        .fn()
+        .mockResolvedValue({});
+
+      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({});
+      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue({});
+
+      const deleteComment = await commentUseCase.deleteComment(useCasePayload);
+
+      expect(deleteComment).toStrictEqual({
+        id: useCasePayload.commentId,
+        isDeleted: true,
       });
+
+      expect(mockCommentRepository.deleteComment).toBeCalledWith({
+        commentId: useCasePayload.commentId,
+        parentCommentId: "comment-parent123",
+      });
+
+      expect(mockCommentRepository.getCommentById).toBeCalledWith({
+        commentId: useCasePayload.commentId,
+        threadId: useCasePayload.threadId,
+      });
+
+      expect(mockCommentRepository.verifyCommentOwner).toBeCalledWith({
+        owner: useCasePayload.owner,
+        commentId: useCasePayload.commentId,
+      });
+
+      expect(mockThreadRepository.getThreadById).toBeCalledWith(
+        useCasePayload.threadId
+      );
     });
   });
 });

@@ -14,24 +14,26 @@ class ThreadUseCase {
   }
 
   async getThreadDetail(payload) {
-    const threadData = await this._threadRepository.getThreadById(payload);
-
-    const threadComments = await this._commentRepository.getCommentsFromThread({
-      threadId: payload,
-    });
+    const thread = await this._threadRepository.getThreadById(payload);
+    const relatedComments = await this._commentRepository.getCommentsFromThread(
+      {
+        threadId: payload,
+      }
+    );
 
     const commentsWithReplies = [];
 
-    threadComments.forEach((comment) => {
+    relatedComments.forEach((comment) => {
+      const baseComment = {
+        ...comment,
+        date: comment.date.toString(),
+        isDeleted: comment.is_deleted,
+        parentCommentId: comment.parent_comment_id,
+      };
+
       if (!comment.parent_comment_id) {
         commentsWithReplies.push({
-          ...new ThreadComment({
-            id: comment.id,
-            date: comment.date.toString(),
-            content: comment.content,
-            username: comment.username,
-            isDeleted: comment.is_deleted,
-          }),
+          ...new ThreadComment(baseComment),
         });
         return;
       }
@@ -39,24 +41,17 @@ class ThreadUseCase {
       const parentCommentIdx = commentsWithReplies.findIndex(
         (parent) => parent.id === comment.parent_comment_id
       );
-      const parentComment = commentsWithReplies[parentCommentIdx];
+      if (parentCommentIdx >= 0) {
+        const parentComment = commentsWithReplies[parentCommentIdx];
 
-      if (!parentComment) return;
-
-      parentComment.replies.push({
-        ...new CommentReply({
-          id: comment.id,
-          date: comment.date.toString(),
-          content: comment.content,
-          username: comment.username,
-          isDeleted: comment.is_deleted,
-          parentCommentId: comment.parent_comment_id,
-        }),
-      });
+        parentComment.replies.push({
+          ...new CommentReply(baseComment),
+        });
+      }
     });
 
     return {
-      ...threadData,
+      ...thread,
       comments: commentsWithReplies,
     };
   }
