@@ -12,6 +12,7 @@ describe("CommentRepository postgres", () => {
 
   beforeEach(async () => {
     await UsersTableTestHelper.addUser({ id: "user-123", username: "rimuru" });
+
     await ThreadsTableTestHelper.addThread({
       id: "thread-123",
       owner: "user-123",
@@ -33,7 +34,7 @@ describe("CommentRepository postgres", () => {
 
   describe("insertComment function", () => {
     it("should return added comment correctly", async () => {
-      await commentRepository.insertComment(
+      const addedComment = await commentRepository.insertComment(
         new AddComment({
           owner: "user-123",
           threadId: "thread-123",
@@ -41,34 +42,37 @@ describe("CommentRepository postgres", () => {
         })
       );
 
-      const addedComment =
-        await CommentsTableTestHelper.findCommentById("comment-123");
-
       expect(addedComment.id).toEqual("comment-123");
+      expect(addedComment.owner).toEqual("user-123");
+      expect(addedComment.content).toEqual("some random content for testing");
     });
   });
 
   describe("insertCommentAsReply function", () => {
     it("should return added comment as reply correctly", async () => {
+      await UsersTableTestHelper.addUser({
+        id: "user-234",
+        username: "benimaru",
+      });
+
       await CommentsTableTestHelper.insertComment({
         id: "comment-123",
         threadId: "thread-123",
         owner: "user-123",
       });
 
-      await commentRepository.insertCommentAsReply(
+      const addedReply = await commentRepository.insertCommentAsReply(
         new AddComment({
-          owner: "user-123",
+          owner: "user-234",
           threadId: "thread-123",
-          content: "some random content for testing",
+          content: "some random reply for testing",
           parentCommentId: "comment-123",
         })
       );
 
-      const addedReply =
-        await CommentsTableTestHelper.findCommentById("reply-123");
-
       expect(addedReply.id).toEqual("reply-123");
+      expect(addedReply.owner).toEqual("user-234");
+      expect(addedReply.content).toEqual("some random reply for testing");
     });
   });
 
@@ -80,15 +84,12 @@ describe("CommentRepository postgres", () => {
         threadId: "thread-123",
       });
 
-      await commentRepository.deleteComment({
+      const deletedComment = await commentRepository.deleteComment({
         commentId: "comment-123",
       });
 
-      const deletedComment =
-        await CommentsTableTestHelper.findCommentById("comment-123");
-
       expect(deletedComment.id).toBe("comment-123");
-      expect(deletedComment.is_deleted).toBe(true);
+      expect(deletedComment.isDeleted).toBe(true);
     });
 
     it("should throw NotFoundError if there is no comment found with given id", async () => {
@@ -104,6 +105,7 @@ describe("CommentRepository postgres", () => {
         id: "comment-123",
         owner: "user-123",
         threadId: "thread-123",
+        content: "random",
       });
 
       const comment = await commentRepository.getCommentById({
@@ -111,8 +113,11 @@ describe("CommentRepository postgres", () => {
         commentId: "comment-123",
       });
 
-      expect(comment.id).toStrictEqual("comment-123");
+      expect(comment.id).toBe("comment-123");
       expect(comment.thread_id).toBe("thread-123");
+      expect(comment.user_id).toBe("user-123");
+      expect(comment.content).toBe("random");
+      expect(comment.is_deleted).toBe(false);
     });
 
     it("should throw NotFoundError if there is no comment found with given id", async () => {
@@ -133,21 +138,19 @@ describe("CommentRepository postgres", () => {
         id: "comment-123",
         owner: "user-123",
         threadId: "thread-123",
-      });
-
-      await CommentsTableTestHelper.insertComment({
-        id: "comment-234",
-        owner: "user-234",
-        threadId: "thread-123",
+        content: "random",
       });
 
       const comments = await commentRepository.getCommentsFromThread({
         threadId: "thread-123",
       });
 
-      expect(comments.length).toBe(2);
+      expect(comments.length).toBe(1);
+      expect(comments[0]).toHaveProperty("id", "comment-123");
       expect(comments[0]).toHaveProperty("username", "rimuru");
-      expect(comments[1]).toHaveProperty("username", "benimaru");
+      expect(comments[0]).toHaveProperty("is_deleted", false);
+      expect(comments[0]).toHaveProperty("parent_comment_id", null);
+      expect(comments[0]).toHaveProperty("content", "random");
     });
   });
 

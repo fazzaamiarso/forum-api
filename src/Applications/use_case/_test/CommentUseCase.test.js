@@ -2,6 +2,7 @@ const CommentRepository = require("../../../Domains/comments/CommentRepository")
 const AddComment = require("../../../Domains/comments/entities/AddComment");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
 const CommentUseCase = require("../CommentUseCase");
+const ThreadDetail = require("../../../Domains/threads/entities/ThreadDetail");
 
 describe("CommentUseCase", () => {
   let mockCommentRepository;
@@ -35,7 +36,15 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue(mockComment);
 
-      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue({});
+      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
+        new ThreadDetail({
+          id: "thread-123",
+          title: "mock title",
+          body: "ramdom",
+          username: "rimuru",
+          date: "2021-08-08T07:59:48.766Z",
+        })
+      );
 
       const addedComment = await commentUseCase.addComment(useCasePayload);
 
@@ -67,10 +76,26 @@ describe("CommentUseCase", () => {
 
       mockCommentRepository.verifyCommentOwner = jest
         .fn()
-        .mockResolvedValue({});
+        .mockResolvedValue("user-123");
 
-      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({});
-      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue({});
+      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
+        id: "comment-123",
+        user_id: "user-123",
+        thread_id: "thread-123",
+        content: "ramdom",
+        is_delete: false,
+        date: new Date(),
+      });
+
+      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
+        new ThreadDetail({
+          id: "thread-123",
+          title: "mock title",
+          body: "ramdom",
+          username: "rimuru",
+          date: "2021-08-08T07:59:48.766Z",
+        })
+      );
 
       const deleteComment = await commentUseCase.deleteComment(useCasePayload);
 
@@ -120,7 +145,14 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue(mockReply);
 
-      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({});
+      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
+        id: "comment-123",
+        user_id: "user-123",
+        thread_id: "thread-123",
+        content: "ramdom",
+        is_delete: false,
+        date: new Date(),
+      });
 
       const addedReply = await commentUseCase.addCommentAsReply(useCasePayload);
 
@@ -156,10 +188,25 @@ describe("CommentUseCase", () => {
 
       mockCommentRepository.verifyCommentOwner = jest
         .fn()
-        .mockResolvedValue({});
+        .mockResolvedValue("user-123");
 
-      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({});
-      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue({});
+      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
+        id: "comment-123",
+        user_id: "user-123",
+        thread_id: "thread-123",
+        content: "ramdom",
+        is_delete: false,
+        date: new Date(),
+      });
+      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
+        new ThreadDetail({
+          id: "thread-123",
+          title: "mock title",
+          body: "ramdom",
+          username: "rimuru",
+          date: "2021-08-08T07:59:48.766Z",
+        })
+      );
 
       const deleteComment = await commentUseCase.deleteComment(useCasePayload);
 
