@@ -23,7 +23,7 @@ class CommentRepository {
     throw new Error("VERIFY_COMMENT_OWNER.METHOD_NOT_IMPLEMENTED");
   }
 
-  async checkCommentAvailibility(payload) {
+  async checkCommentAvailability(payload) {
     throw new Error("CHECK_COMMENT_AVAILIBILITY.METHOD_NOT_IMPLEMENTED");
   }
 }

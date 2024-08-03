@@ -181,7 +181,7 @@ describe("CommentRepository postgres", () => {
     });
   });
 
-  describe("checkCommentAvailibility function", () => {
+  describe("checkCommentAvailability function", () => {
     it("should not Throw with when there comment is available", async () => {
       const mockDate = new Date();
 
@@ -194,7 +194,7 @@ describe("CommentRepository postgres", () => {
       });
 
       expect(
-        commentRepository.checkCommentAvailibility({
+        commentRepository.checkCommentAvailability({
           threadId: "thread-123",
           commentId: "comment-123",
         })
@@ -203,7 +203,7 @@ describe("CommentRepository postgres", () => {
 
     it("should throw NotFoundError if there is no comment found with given id", async () => {
       await expect(
-        commentRepository.checkCommentAvailibility("not-found-id")
+        commentRepository.checkCommentAvailability("not-found-id")
       ).rejects.toThrow(NotFoundError);
     });
   });

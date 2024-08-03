@@ -2,7 +2,6 @@ const CommentRepository = require("../../../Domains/comments/CommentRepository")
 const AddComment = require("../../../Domains/comments/entities/AddComment");
 const ThreadRepository = require("../../../Domains/threads/ThreadRepository");
 const CommentUseCase = require("../CommentUseCase");
-const ThreadDetail = require("../../../Domains/threads/entities/ThreadDetail");
 
 describe("CommentUseCase", () => {
   let mockCommentRepository;
@@ -36,15 +35,9 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue(mockComment);
 
-      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
-        new ThreadDetail({
-          id: "thread-123",
-          title: "mock title",
-          body: "ramdom",
-          username: "rimuru",
-          date: "2021-08-08T07:59:48.766Z",
-        })
-      );
+      mockThreadRepository.checkThreadAvailability = jest
+        .fn()
+        .mockResolvedValue();
 
       const addedComment = await commentUseCase.addComment(useCasePayload);
 
@@ -54,7 +47,7 @@ describe("CommentUseCase", () => {
         owner: "user-DWrT3pXe1hccYkV1eIAxS",
       });
 
-      expect(mockThreadRepository.getThreadById).toBeCalledWith(
+      expect(mockThreadRepository.checkThreadAvailability).toBeCalledWith(
         useCasePayload.threadId
       );
       expect(mockCommentRepository.insertComment).toBeCalledWith(
@@ -78,19 +71,13 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue("user-123");
 
-      mockCommentRepository.checkCommentAvailibility = jest
+      mockCommentRepository.checkCommentAvailability = jest
         .fn()
         .mockResolvedValue();
 
-      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
-        new ThreadDetail({
-          id: "thread-123",
-          title: "mock title",
-          body: "ramdom",
-          username: "rimuru",
-          date: "2021-08-08T07:59:48.766Z",
-        })
-      );
+      mockThreadRepository.checkThreadAvailability = jest
+        .fn()
+        .mockResolvedValue();
 
       const deleteComment = await commentUseCase.deleteComment(useCasePayload);
 
@@ -104,7 +91,11 @@ describe("CommentUseCase", () => {
         parentCommentId: null,
       });
 
-      expect(mockCommentRepository.checkCommentAvailibility).toBeCalledWith({
+      expect(mockThreadRepository.checkThreadAvailability).toBeCalledWith(
+        useCasePayload.threadId
+      );
+
+      expect(mockCommentRepository.checkCommentAvailability).toBeCalledWith({
         commentId: useCasePayload.commentId,
         threadId: useCasePayload.threadId,
       });
@@ -136,7 +127,7 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue(mockReply);
 
-      mockCommentRepository.checkCommentAvailibility = jest
+      mockCommentRepository.checkCommentAvailability = jest
         .fn()
         .mockResolvedValue();
 
@@ -149,7 +140,7 @@ describe("CommentUseCase", () => {
         date: "2021-08-08T07:59:48.766Z",
       });
 
-      expect(mockCommentRepository.checkCommentAvailibility).toBeCalledWith({
+      expect(mockCommentRepository.checkCommentAvailability).toBeCalledWith({
         commentId: useCasePayload.parentCommentId,
         threadId: useCasePayload.threadId,
       });
@@ -175,7 +166,11 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue("user-123");
 
-      mockCommentRepository.checkCommentAvailibility = jest
+      mockCommentRepository.checkCommentAvailability = jest
+        .fn()
+        .mockResolvedValue();
+
+      mockThreadRepository.checkThreadAvailability = jest
         .fn()
         .mockResolvedValue();
 
@@ -186,12 +181,16 @@ describe("CommentUseCase", () => {
         isDeleted: true,
       });
 
+      expect(mockThreadRepository.checkThreadAvailability).toBeCalledWith(
+        useCasePayload.threadId
+      );
+
       expect(mockCommentRepository.deleteComment).toBeCalledWith({
         commentId: useCasePayload.commentId,
         parentCommentId: "comment-parent123",
       });
 
-      expect(mockCommentRepository.checkCommentAvailibility).toBeCalledWith({
+      expect(mockCommentRepository.checkCommentAvailability).toBeCalledWith({
         commentId: useCasePayload.commentId,
         threadId: useCasePayload.threadId,
       });

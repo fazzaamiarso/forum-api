@@ -64,17 +64,28 @@ describe("ThreadRepository postgres", () => {
         })
       );
     });
+  });
 
-    it("should throw NotFoundError if there is no thread found with given id", async () => {
+  describe("checkThreadAvailability function", () => {
+    it("should not Throw with when there is thread available", async () => {
+      const mockDate = new Date();
+
       await ThreadsTableTestHelper.addThread({
         id: "thread-123",
         owner: "user-123",
         title: "some title",
         body: "somebody needs to know",
+        date: mockDate,
       });
 
+      expect(
+        threadRepository.checkThreadAvailability("thread-123")
+      ).resolves.not.toThrow(NotFoundError);
+    });
+
+    it("should throw NotFoundError if there is no comment found with given id", async () => {
       await expect(
-        threadRepository.getThreadById("thread-not-found")
+        threadRepository.checkThreadAvailability("not-found-id")
       ).rejects.toThrow(NotFoundError);
     });
   });

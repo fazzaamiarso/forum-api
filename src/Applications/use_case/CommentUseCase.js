@@ -9,15 +9,14 @@ class CommentUseCase {
 
   async addComment(payload) {
     const comment = new AddComment(payload);
-    // TODO: check with 'checkThreadAvailibilty'
-    await this._threadRepository.getThreadById(comment.threadId);
+    await this._threadRepository.checkThreadAvailability(comment.threadId);
     return this._commentRepository.insertComment(comment);
   }
 
   async addCommentAsReply(payload) {
     const comment = new AddComment(payload);
 
-    await this._commentRepository.checkCommentAvailibility({
+    await this._commentRepository.checkCommentAvailability({
       threadId: comment.threadId,
       commentId: comment.parentCommentId,
     });
@@ -28,7 +27,9 @@ class CommentUseCase {
   async deleteComment(payload) {
     const comment = new DeleteComment(payload);
 
-    await this._commentRepository.checkCommentAvailibility({
+    await this._threadRepository.checkThreadAvailability(payload.threadId);
+
+    await this._commentRepository.checkCommentAvailability({
       threadId: payload.threadId,
       commentId: payload.commentId,
     });
