@@ -91,12 +91,6 @@ describe("CommentRepository postgres", () => {
       expect(deletedComment.id).toBe("comment-123");
       expect(deletedComment.isDeleted).toBe(true);
     });
-
-    it("should throw NotFoundError if there is no comment found with given id", async () => {
-      await expect(
-        commentRepository.deleteComment("non-existent-comment")
-      ).rejects.toThrow(NotFoundError);
-    });
   });
 
   describe("getCommentById function", () => {
@@ -122,12 +116,6 @@ describe("CommentRepository postgres", () => {
       expect(comment.content).toBe("random");
       expect(comment.is_deleted).toBe(false);
       expect(comment.date).toEqual(mockDate);
-    });
-
-    it("should throw NotFoundError if there is no comment found with given id", async () => {
-      await expect(
-        commentRepository.getCommentById("not-found-id")
-      ).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -190,6 +178,33 @@ describe("CommentRepository postgres", () => {
       });
 
       await expect(verifyOwnerPromise).rejects.toThrow(AuthorizationError);
+    });
+  });
+
+  describe("checkCommentAvailibility function", () => {
+    it("should not Throw with when there comment is available", async () => {
+      const mockDate = new Date();
+
+      await CommentsTableTestHelper.insertComment({
+        id: "comment-123",
+        owner: "user-123",
+        threadId: "thread-123",
+        content: "random",
+        date: mockDate,
+      });
+
+      expect(
+        commentRepository.checkCommentAvailibility({
+          threadId: "thread-123",
+          commentId: "comment-123",
+        })
+      ).resolves.not.toThrow(NotFoundError);
+    });
+
+    it("should throw NotFoundError if there is no comment found with given id", async () => {
+      await expect(
+        commentRepository.checkCommentAvailibility("not-found-id")
+      ).rejects.toThrow(NotFoundError);
     });
   });
 });

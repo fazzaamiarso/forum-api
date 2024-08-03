@@ -22,6 +22,10 @@ class CommentRepository {
   async verifyCommentOwner(payload) {
     throw new Error("VERIFY_COMMENT_OWNER.METHOD_NOT_IMPLEMENTED");
   }
+
+  async checkCommentAvailibility(payload) {
+    throw new Error("CHECK_COMMENT_AVAILIBILITY.METHOD_NOT_IMPLEMENTED");
+  }
 }
 
 module.exports = CommentRepository;

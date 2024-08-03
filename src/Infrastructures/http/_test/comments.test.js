@@ -163,6 +163,8 @@ describe("/threads/{threadId}/comments endpoint", () => {
 
       const responseJson = JSON.parse(response.payload);
 
+      console.log(`SKILL ISSUE: ${JSON.stringify(responseJson)}`);
+
       expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual("success");
       expect(responseJson.data.addedReply).toBeDefined();

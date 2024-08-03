@@ -51,9 +51,6 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    if (!result.rowCount)
-      throw new NotFoundError(`No comment with id: ${commentId} found`);
-
     const row = result.rows[0];
 
     return { id: row.id, isDeleted: row.is_deleted };
@@ -67,14 +64,23 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
+    const row = result.rows[0];
+
+    return { ...row };
+  }
+
+  async checkCommentAvailibility({ commentId, threadId }) {
+    const query = {
+      text: `SELECT id FROM comments WHERE id = $1 AND thread_id = $2 AND is_deleted = false`,
+      values: [commentId, threadId],
+    };
+
+    const result = await this._pool.query(query);
+
     if (!result.rowCount)
       throw new NotFoundError(
         `No comment with id: ${commentId} in thread: ${threadId} found`
       );
-
-    const row = result.rows[0];
-
-    return { ...row };
   }
 
   async getCommentsFromThread({ threadId }) {

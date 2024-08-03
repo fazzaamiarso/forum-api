@@ -78,14 +78,9 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue("user-123");
 
-      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
-        id: "comment-123",
-        user_id: "user-123",
-        thread_id: "thread-123",
-        content: "ramdom",
-        is_delete: false,
-        date: new Date(),
-      });
+      mockCommentRepository.checkCommentAvailibility = jest
+        .fn()
+        .mockResolvedValue();
 
       mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
         new ThreadDetail({
@@ -109,7 +104,7 @@ describe("CommentUseCase", () => {
         parentCommentId: null,
       });
 
-      expect(mockCommentRepository.getCommentById).toBeCalledWith({
+      expect(mockCommentRepository.checkCommentAvailibility).toBeCalledWith({
         commentId: useCasePayload.commentId,
         threadId: useCasePayload.threadId,
       });
@@ -118,10 +113,6 @@ describe("CommentUseCase", () => {
         owner: useCasePayload.owner,
         commentId: useCasePayload.commentId,
       });
-
-      expect(mockThreadRepository.getThreadById).toBeCalledWith(
-        useCasePayload.threadId
-      );
     });
   });
 
@@ -145,14 +136,9 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue(mockReply);
 
-      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
-        id: "comment-123",
-        user_id: "user-123",
-        thread_id: "thread-123",
-        content: "ramdom",
-        is_delete: false,
-        date: new Date(),
-      });
+      mockCommentRepository.checkCommentAvailibility = jest
+        .fn()
+        .mockResolvedValue();
 
       const addedReply = await commentUseCase.addCommentAsReply(useCasePayload);
 
@@ -163,11 +149,10 @@ describe("CommentUseCase", () => {
         date: "2021-08-08T07:59:48.766Z",
       });
 
-      expect(mockCommentRepository.getCommentById).toBeCalledWith({
-        threadId: useCasePayload.threadId,
+      expect(mockCommentRepository.checkCommentAvailibility).toBeCalledWith({
         commentId: useCasePayload.parentCommentId,
+        threadId: useCasePayload.threadId,
       });
-
       expect(mockCommentRepository.insertCommentAsReply).toBeCalledWith(
         new AddComment(useCasePayload)
       );
@@ -190,23 +175,9 @@ describe("CommentUseCase", () => {
         .fn()
         .mockResolvedValue("user-123");
 
-      mockCommentRepository.getCommentById = jest.fn().mockResolvedValue({
-        id: "comment-123",
-        user_id: "user-123",
-        thread_id: "thread-123",
-        content: "ramdom",
-        is_delete: false,
-        date: new Date(),
-      });
-      mockThreadRepository.getThreadById = jest.fn().mockResolvedValue(
-        new ThreadDetail({
-          id: "thread-123",
-          title: "mock title",
-          body: "ramdom",
-          username: "rimuru",
-          date: "2021-08-08T07:59:48.766Z",
-        })
-      );
+      mockCommentRepository.checkCommentAvailibility = jest
+        .fn()
+        .mockResolvedValue();
 
       const deleteComment = await commentUseCase.deleteComment(useCasePayload);
 
@@ -220,7 +191,7 @@ describe("CommentUseCase", () => {
         parentCommentId: "comment-parent123",
       });
 
-      expect(mockCommentRepository.getCommentById).toBeCalledWith({
+      expect(mockCommentRepository.checkCommentAvailibility).toBeCalledWith({
         commentId: useCasePayload.commentId,
         threadId: useCasePayload.threadId,
       });
@@ -229,10 +200,6 @@ describe("CommentUseCase", () => {
         owner: useCasePayload.owner,
         commentId: useCasePayload.commentId,
       });
-
-      expect(mockThreadRepository.getThreadById).toBeCalledWith(
-        useCasePayload.threadId
-      );
     });
   });
 });
