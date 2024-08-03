@@ -101,11 +101,14 @@ describe("CommentRepository postgres", () => {
 
   describe("getCommentById function", () => {
     it("should return comment correctly with correct id", async () => {
+      const mockDate = new Date();
+
       await CommentsTableTestHelper.insertComment({
         id: "comment-123",
         owner: "user-123",
         threadId: "thread-123",
         content: "random",
+        date: mockDate,
       });
 
       const comment = await commentRepository.getCommentById({
@@ -118,6 +121,7 @@ describe("CommentRepository postgres", () => {
       expect(comment.user_id).toBe("user-123");
       expect(comment.content).toBe("random");
       expect(comment.is_deleted).toBe(false);
+      expect(comment.date).toEqual(mockDate);
     });
 
     it("should throw NotFoundError if there is no comment found with given id", async () => {
@@ -134,11 +138,13 @@ describe("CommentRepository postgres", () => {
         username: "benimaru",
       });
 
+      const mockDate = new Date();
       await CommentsTableTestHelper.insertComment({
         id: "comment-123",
         owner: "user-123",
         threadId: "thread-123",
         content: "random",
+        date: mockDate,
       });
 
       const comments = await commentRepository.getCommentsFromThread({
@@ -151,6 +157,7 @@ describe("CommentRepository postgres", () => {
       expect(comments[0]).toHaveProperty("is_deleted", false);
       expect(comments[0]).toHaveProperty("parent_comment_id", null);
       expect(comments[0]).toHaveProperty("content", "random");
+      expect(comments[0]).toHaveProperty("date", mockDate);
     });
   });
 

@@ -8,12 +8,13 @@ const CommentsTableTestHelper = {
     threadId = "thread-456",
     content = "some random content for testing",
     parentCommentId = null,
+    date = new Date(),
   }) {
     const query = {
       text: `INSERT INTO
-      comments(id, user_id, thread_id, content, parent_comment_id)
-      VALUES($1, $2, $3, $4, $5)`,
-      values: [id, owner, threadId, content, parentCommentId],
+      comments(id, user_id, thread_id, content, parent_comment_id, date)
+      VALUES($1, $2, $3, $4, $5, $6)`,
+      values: [id, owner, threadId, content, parentCommentId, date],
     };
 
     await pool.query(query);

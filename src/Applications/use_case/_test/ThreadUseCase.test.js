@@ -116,38 +116,41 @@ describe("ThreadUseCase", () => {
         useCasePayload
       );
 
-      expect(threadDetail.comments).toStrictEqual([
-        {
-          id: "comment-_pby2_tmXV6bcvcdev8xk",
-          username: "johndoe",
-          date: "2021-08-08T07:22:33.555Z",
-          content: "sebuah comment",
-          replies: [
-            {
-              id: "reply-777",
-              username: "dicoding",
-              date: "2022-08-08T0:26:21.338Z",
-              content: "some random thing",
-              parentCommentId: "comment-_pby2_tmXV6bcvcdev8xk",
-            },
-          ],
-        },
-        {
-          id: "comment-yksuCoxM2s4MMrZJO-qVD",
-          username: "dicoding",
-          date: "2021-08-08T07:26:21.338Z",
-          content: "**komentar telah dihapus**",
-          replies: [
-            {
-              id: "reply-888",
-              username: "dicoding",
-              date: "2022-09-08T0:26:21.338Z",
-              content: "**balasan telah dihapus**",
-              parentCommentId: "comment-yksuCoxM2s4MMrZJO-qVD",
-            },
-          ],
-        },
-      ]);
+      expect(threadDetail).toStrictEqual({
+        ...mockThreadDetail,
+        comments: [
+          {
+            id: "comment-_pby2_tmXV6bcvcdev8xk",
+            username: "johndoe",
+            date: "2021-08-08T07:22:33.555Z",
+            content: "sebuah comment",
+            replies: [
+              {
+                id: "reply-777",
+                username: "dicoding",
+                date: "2022-08-08T0:26:21.338Z",
+                content: "some random thing",
+                parentCommentId: "comment-_pby2_tmXV6bcvcdev8xk",
+              },
+            ],
+          },
+          {
+            id: "comment-yksuCoxM2s4MMrZJO-qVD",
+            username: "dicoding",
+            date: "2021-08-08T07:26:21.338Z",
+            content: "**komentar telah dihapus**",
+            replies: [
+              {
+                id: "reply-888",
+                username: "dicoding",
+                date: "2022-09-08T0:26:21.338Z",
+                content: "**balasan telah dihapus**",
+                parentCommentId: "comment-yksuCoxM2s4MMrZJO-qVD",
+              },
+            ],
+          },
+        ],
+      });
     });
   });
 });

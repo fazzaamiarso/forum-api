@@ -7,13 +7,14 @@ const ThreadsTableTestHelper = {
     title = "dicoding",
     body = "some default values for body",
     owner = "user-456",
+    date = new Date(),
   }) {
     const query = {
       text: `INSERT 
-        INTO threads(id, user_id, title, body) 
-        VALUES($1, $2, $3, $4) 
+        INTO threads(id, user_id, title, body, date) 
+        VALUES($1, $2, $3, $4, $5) 
         RETURNING id, user_id AS owner, title`,
-      values: [id, owner, title, body],
+      values: [id, owner, title, body, date],
     };
 
     await pool.query(query);

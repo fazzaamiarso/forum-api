@@ -4,6 +4,7 @@ const ThreadsTableTestHelper = require("../../../../tests/ThreadsTableTestHelper
 const UsersTableTestHelper = require("../../../../tests/UsersTableTestHelper");
 const AddThread = require("../../../Domains/threads/entities/AddThread");
 const NotFoundError = require("../../../Commons/exceptions/NotFoundError");
+const ThreadDetail = require("../../../Domains/threads/entities/ThreadDetail");
 
 describe("ThreadRepository postgres", () => {
   let threadRepository;
@@ -41,20 +42,27 @@ describe("ThreadRepository postgres", () => {
 
   describe("getThreadById function", () => {
     it("should return thread correctly with correct id", async () => {
+      const mockDate = new Date();
+
       await ThreadsTableTestHelper.addThread({
         id: "thread-123",
         owner: "user-123",
         title: "some title",
         body: "somebody needs to know",
+        date: mockDate,
       });
 
       const thread = await threadRepository.getThreadById("thread-123");
 
-      expect(thread.id).toEqual("thread-123");
-      expect(thread.username).toEqual("rimuru");
-      expect(thread.title).toEqual("some title");
-      expect(thread.body).toEqual("somebody needs to know");
-      expect(thread.date).toBeDefined();
+      expect(thread).toEqual(
+        new ThreadDetail({
+          id: "thread-123",
+          username: "rimuru",
+          title: "some title",
+          body: "somebody needs to know",
+          date: mockDate.toISOString(),
+        })
+      );
     });
 
     it("should throw NotFoundError if there is no thread found with given id", async () => {
