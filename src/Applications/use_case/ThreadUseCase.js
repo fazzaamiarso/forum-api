@@ -41,6 +41,7 @@ class ThreadUseCase {
       const parentCommentIdx = commentsWithReplies.findIndex(
         (parent) => parent.id === comment.parent_comment_id
       );
+
       if (parentCommentIdx >= 0) {
         const parentComment = commentsWithReplies[parentCommentIdx];
 

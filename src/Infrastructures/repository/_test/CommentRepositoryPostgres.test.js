@@ -157,12 +157,14 @@ describe("CommentRepository postgres", () => {
         threadId: "thread-123",
       });
 
-      const verifiedCommentId = await commentRepository.verifyCommentOwner({
+      const verifyOwnerPromise = commentRepository.verifyCommentOwner({
         commentId: "comment-123",
         owner: "user-123",
       });
+      const verifiedCommentId = await verifyOwnerPromise;
 
       expect(verifiedCommentId).toEqual("comment-123");
+      await expect(verifyOwnerPromise).resolves.not.toThrow(AuthorizationError);
     });
 
     it("should throw AuthorizationError if not the owner", async () => {

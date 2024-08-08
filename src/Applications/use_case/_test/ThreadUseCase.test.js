@@ -55,10 +55,10 @@ describe("ThreadUseCase", () => {
       };
 
       const mockThreadDetail = new ThreadDetail({
-        id: "thread-somthing",
+        id: "thread-something",
         title: "Some title",
         body: "Some more body for testing",
-        date: new Date().toISOString(),
+        date: "2024-08-08T08:23:16.323Z'",
         username: "somebody",
       });
 
@@ -117,7 +117,11 @@ describe("ThreadUseCase", () => {
       );
 
       expect(threadDetail).toStrictEqual({
-        ...mockThreadDetail,
+        id: "thread-something",
+        title: "Some title",
+        body: "Some more body for testing",
+        date: "2024-08-08T08:23:16.323Z'",
+        username: "somebody",
         comments: [
           {
             id: "comment-_pby2_tmXV6bcvcdev8xk",
@@ -150,6 +154,101 @@ describe("ThreadUseCase", () => {
             ],
           },
         ],
+      });
+    });
+
+    it("should handle comments with parent IDs as top-level comments", async () => {
+      const payload = "thread-something";
+
+      const mockThreadDetail = new ThreadDetail({
+        id: "thread-something",
+        title: "Some title",
+        body: "Some more body for testing",
+        date: "2024-08-08T08:23:16.323Z'",
+        username: "somebody",
+      });
+
+      const relatedComments = [
+        {
+          id: "comment-yksuCoxM2s4MMrZJO-qVD",
+          username: "dicoding",
+          date: "2021-08-08T07:26:21.338Z",
+          content: "some random thing",
+          is_deleted: false,
+          parent_comment_id: null,
+        },
+        {
+          id: "comment-yksuCoxM2s4-qsdD",
+          username: "dicoding",
+          date: "2021-08-08T07:26:21.338Z",
+          content: "some random thing",
+          is_deleted: false,
+          parent_comment_id: "comment-yksuCoxM2s4MMrZJO-qVD",
+        },
+      ];
+
+      mockThreadRepository.getThreadById = jest
+        .fn()
+        .mockResolvedValue(mockThreadDetail);
+
+      mockCommentRepository.getCommentsFromThread = jest
+        .fn()
+        .mockResolvedValue(relatedComments);
+
+      const result = await threadUseCase.getThreadDetail(payload);
+
+      expect(result).toEqual({
+        id: "thread-something",
+        title: "Some title",
+        body: "Some more body for testing",
+        date: "2024-08-08T08:23:16.323Z'",
+        username: "somebody",
+        comments: [
+          {
+            id: "comment-yksuCoxM2s4MMrZJO-qVD",
+            username: "dicoding",
+            date: "2021-08-08T07:26:21.338Z",
+            content: "some random thing",
+            replies: [
+              {
+                id: "comment-yksuCoxM2s4-qsdD",
+                username: "dicoding",
+                date: "2021-08-08T07:26:21.338Z",
+                content: "some random thing",
+                parentCommentId: "comment-yksuCoxM2s4MMrZJO-qVD",
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it("should handle the case when there are no comments", async () => {
+      const payload = "thread-something";
+      const mockThreadDetail = new ThreadDetail({
+        id: "thread-something",
+        title: "Some title",
+        body: "Some more body for testing",
+        date: "2024-08-08T08:23:16.323Z'",
+        username: "somebody",
+      });
+
+      mockThreadRepository.getThreadById = jest
+        .fn()
+        .mockResolvedValue(mockThreadDetail);
+      mockCommentRepository.getCommentsFromThread = jest
+        .fn()
+        .mockResolvedValue([]);
+
+      const result = await threadUseCase.getThreadDetail(payload);
+
+      expect(result).toEqual({
+        id: "thread-something",
+        title: "Some title",
+        body: "Some more body for testing",
+        date: "2024-08-08T08:23:16.323Z'",
+        username: "somebody",
+        comments: [],
       });
     });
   });
